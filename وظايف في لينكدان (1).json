@@ -1,0 +1,465 @@
+{
+  "name": "وظايف في لينكدان",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        624,
+        416
+      ],
+      "id": "55bc076a-a05a-4a80-9aca-f4843df8f6aa",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google_jobs"
+            },
+            {
+              "name": "q",
+              "value": "Barista"
+            },
+            {
+              "name": "location",
+              "value": "Austin, Texas, United States"
+            },
+            {
+              "name": "google_domain",
+              "value": "google.com"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "us"
+            },
+            {
+              "name": "api_key",
+              "value": "8825467a8ebaaaf4fba86e7168fc3ae3572f01271089ce1269aaf894f3b0f395"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        832,
+        416
+      ],
+      "id": "2a1afdc1-f9e0-4e72-8743-5a3230a756bb",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const jobs = $json.jobs_results || [];\n\nif (!jobs.length) {\n  return [];\n}\n\nreturn jobs.map(job => {\n  return {\n    json: {\n      الوظيفة: job.title || \"غير معروف\",\n      الشركة: job.company_name || \"غير معروف\",\n      الموقع: job.location || \"غير معروف\",\n      تاريخ_النشر: job.detected_extensions?.posted_at || \"غير معروف\",\n      الرابط: job.share_link || \"لا يوجد رابط\",\n\n      // هذه للتيليجرام\n      message:\n`🚨 وظيفة جديدة\n\n💼 الوظيفة: ${job.title || \"غير معروف\"}\n🏢 الشركة: ${job.company_name || \"غير معروف\"}\n📍 الموقع: ${job.location || \"غير معروف\"}\n📅 النشر: ${job.detected_extensions?.posted_at || \"غير معروف\"}\n🔗 الرابط:\n${job.share_link || \"لا يوجد رابط\"}`\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        416
+      ],
+      "id": "63c51a35-4c04-4a38-986e-9bbc4b64a6ae",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1872,
+        416
+      ],
+      "id": "1db31dbc-4a26-4e70-97df-5505253b2c5a",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1ymISTURCG93Jkc_Qb-sq5ao4Vr9scKqhpJ-lO03svrY",
+          "mode": "list",
+          "cachedResultName": "تغيير1 ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ymISTURCG93Jkc_Qb-sq5ao4Vr9scKqhpJ-lO03svrY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1284913706,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ymISTURCG93Jkc_Qb-sq5ao4Vr9scKqhpJ-lO03svrY/edit#gid=1284913706"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "الوظيفة ": "={{ $json['الوظيفة'] }}",
+            "الشركة ": "={{ $json['الشركة'] }}",
+            "موقع ": "={{ $json['الموقع'] }}",
+            "نشر": "={{ $json['تاريخ_النشر'] }}",
+            "رابط": "={{ $json['الرابط'] }}"
+          },
+          "matchingColumns": [
+            "موقع "
+          ],
+          "schema": [
+            {
+              "id": "الوظيفة ",
+              "displayName": "الوظيفة ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "الشركة ",
+              "displayName": "الشركة ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "موقع ",
+              "displayName": "موقع ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "نشر",
+              "displayName": "نشر",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "رابط",
+              "displayName": "رابط",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1248,
+        416
+      ],
+      "id": "1c9a571a-508c-43d2-b1e5-2f9ba65e3450",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vRZOCTFHYMrN3KSH",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1ymISTURCG93Jkc_Qb-sq5ao4Vr9scKqhpJ-lO03svrY",
+          "mode": "list",
+          "cachedResultName": "تعديل ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ymISTURCG93Jkc_Qb-sq5ao4Vr9scKqhpJ-lO03svrY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1284913706,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ymISTURCG93Jkc_Qb-sq5ao4Vr9scKqhpJ-lO03svrY/edit#gid=1284913706"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sates": "send ",
+            "الوظيفة ": "={{ $json['الوظيفة '] }}",
+            "الشركة ": "={{ $json['الشركة '] }}",
+            "موقع ": "={{ $json['موقع '] }}",
+            "نشر": "={{ $json['نشر'] }}",
+            "رابط": "={{ $json['رابط'] }}"
+          },
+          "matchingColumns": [
+            "رابط"
+          ],
+          "schema": [
+            {
+              "id": "الوظيفة ",
+              "displayName": "الوظيفة ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "الشركة ",
+              "displayName": "الشركة ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "موقع ",
+              "displayName": "موقع ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "نشر",
+              "displayName": "نشر",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "رابط",
+              "displayName": "رابط",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sates",
+              "displayName": "sates",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2080,
+        512
+      ],
+      "id": "bc548f77-a371-4756-9f43-da85eda4e3d4",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vRZOCTFHYMrN3KSH",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d470e3bc-f088-43aa-a543-1ebac5aa29e2",
+              "leftValue": "={{ $json['Status'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1664,
+        416
+      ],
+      "id": "0b9352c4-be5e-46c4-9e25-11e64d933e6f",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ymISTURCG93Jkc_Qb-sq5ao4Vr9scKqhpJ-lO03svrY",
+          "mode": "list",
+          "cachedResultName": "تغيير1 ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ymISTURCG93Jkc_Qb-sq5ao4Vr9scKqhpJ-lO03svrY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1284913706,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ymISTURCG93Jkc_Qb-sq5ao4Vr9scKqhpJ-lO03svrY/edit#gid=1284913706"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1456,
+        480
+      ],
+      "id": "420f58d0-8673-44d3-a139-fd08c3ca9bf9",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vRZOCTFHYMrN3KSH",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "da14e34f-12b4-4caf-aa6a-074a126cb79e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3d2591ec0ca7baaaf007b0a2bdaee370235f37bc7e54f350f3a9236cb8877262"
+  },
+  "id": "Nkkr1YMsX7Fu2JpE",
+  "tags": []
+}
